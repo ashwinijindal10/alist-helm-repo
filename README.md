@@ -6,7 +6,7 @@ This chart installs [AList](https://alist.nn.ci/), a file list and WebDAV progra
 
 | Component | Version |
 | --- | --- |
-| Chart | `0.1.7` |
+| Chart | `0.2.0` |
 | AList app | `v3.60.0` |
 | Default image | `xhofe/alist:v3.60.0` |
 
