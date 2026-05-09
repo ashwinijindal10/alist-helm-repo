@@ -14,7 +14,7 @@ program that supports multiple storage backends.
 ## Repository
 
 ```console
-helm repo add alist https://ashwinijindal10.github.io/charts
+helm repo add alist https://ashwinijindal10.github.io/alist-helm-repo/charts
 helm repo update
 ```
 

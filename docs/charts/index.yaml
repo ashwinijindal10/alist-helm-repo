@@ -18,7 +18,7 @@ entries:
           url: https://github.com/AlistGo/alist
     apiVersion: v2
     appVersion: v3.60.0
-    created: "2026-05-09T16:55:44.95931+05:30"
+    created: "2026-05-09T17:00:06.93561+05:30"
     description: A file list program that supports multiple storage, powered by Gin
       and Solidjs.
     digest: 58bb45ae9ee12f6d7934244dc4b57de85758e7a570c9c062fff10f1d17cc247d
@@ -34,6 +34,6 @@ entries:
     - https://github.com/AlistGo/alist
     type: application
     urls:
-    - https://ashwinijindal10.github.io/charts/alist-0.1.6.tgz
+    - https://ashwinijindal10.github.io/alist-helm-repo/charts/alist-0.1.6.tgz
     version: 0.1.6
-generated: "2026-05-09T16:55:44.958434+05:30"
+generated: "2026-05-09T17:00:06.934166+05:30"
