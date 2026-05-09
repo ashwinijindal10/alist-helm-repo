@@ -1,6 +1,6 @@
 # AList Helm Chart
 
-This chart installs [AList](https://alist.nn.ci/), a file list and WebDAV program that supports multiple storage backends.
+This chart installs [AList](https://alist.nn.ci/), a file list and WebDAV program that supports multiple storage backends with comprehensive security and performance tuning capabilities.
 
 ## Versions
 
@@ -19,62 +19,71 @@ helm repo update
 
 ## Quick Start
 
-Install with default settings (persistence enabled):
+Install with default settings:
 
 ```console
 helm install alist alist/alist
 ```
 
-Install from local chart checkout:
+Install from local chart:
 
 ```console
 helm install alist .
 ```
 
-## Upgrade
+Upgrade existing installation:
 
 ```console
 helm upgrade alist alist/alist
 ```
 
-Override specific values:
+## Key Features
 
-```console
-helm upgrade --install alist alist/alist \
-  --set image.tag=v3.60.0 \
-  --set persistence.size=20Gi
-```
+- ✅ **Persistence enabled by default** — Data survives pod restarts
+- ✅ **Security controls** — JWT, admin auth, CORS, protocol selection
+- ✅ **Multi-database support** — SQLite, MySQL, PostgreSQL
+- ✅ **Protocol flexibility** — WebDAV (default), FTP, SFTP, S3
+- ✅ **Performance tuning** — Connection limits, rate limiting, task workers
+- ✅ **Health checks** — Liveness and readiness probes configured
+- ✅ **Logging** — Configurable log levels and rotation
 
 ## Persistence
 
-**Persistence is enabled by default** to ensure AList configuration and runtime data survive pod restarts.
+**Persistence is enabled by default** to preserve AList data across restarts.
 
-Disable persistence only for temporary testing:
+Disable for temporary testing:
 
 ```console
 helm install alist alist/alist \
   --set persistence.enabled=false
 ```
 
-**WARNING:** If persistence is disabled and `inMemory.enabled=true`, all data is lost on pod restart.
-
-Use a custom PVC:
+Use existing PVC:
 
 ```console
 helm install alist alist/alist \
   --set persistence.existingClaim=my-alist-data
 ```
 
+Increase storage size:
+
+```console
+helm install alist alist/alist \
+  --set persistence.size=50Gi
+```
+
 ## Image Variants
 
-AList provides image variants with pre-installed tools:
+Select from multiple image variants:
 
-- `v3.60.0` (default) — Standard image
-- `v3.60.0-aio` — All-in-one with ffmpeg + aria2
-- `v3.60.0-ffmpeg` — With ffmpeg for thumbnail generation (local storage only)
-- `v3.60.0-aria2` — With aria2 for offline downloads
-- `latest` — Latest stable version
-- `beta` — Development version
+| Tag | Description |
+| --- | --- |
+| `v3.60.0` (default) | Standard AList |
+| `v3.60.0-aio` | All-in-one with ffmpeg + aria2 |
+| `v3.60.0-ffmpeg` | With ffmpeg for thumbnails |
+| `v3.60.0-aria2` | With aria2 for offline downloads |
+| `latest` | Latest stable |
+| `beta` | Development version |
 
 Use the all-in-one variant:
 
@@ -83,24 +92,201 @@ helm install alist alist/alist \
   --set image.tag=v3.60.0-aio
 ```
 
-Use ffmpeg for thumbnail generation:
+## Security Configuration
+
+### Admin Password
+
+Set initial admin password:
 
 ```console
 helm install alist alist/alist \
-  --set image.tag=v3.60.0-ffmpeg
+  --set security.adminPassword='your-secure-password'
 ```
+
+**Recommended:** Use Kubernetes Secrets for sensitive data:
+
+```bash
+kubectl create secret generic alist-admin \
+  --from-literal=password='your-secure-password'
+```
+
+### JWT Secret
+
+Generate a secure JWT secret:
+
+```bash
+openssl rand -base64 32
+```
+
+Configure in values:
+
+```yaml
+security:
+  jwtSecret: "your-generated-secret-here"
+  adminPassword: "your-admin-password"
+  forceHttps: true
+```
+
+### TLS/HTTPS
+
+Enable HTTPS with manual certificate:
+
+```yaml
+security:
+  tls:
+    enabled: true
+```
+
+Enable HTTPS with cert-manager:
+
+```yaml
+security:
+  tls:
+    enabled: true
+    certManager:
+      enabled: true
+      issuer: "letsencrypt-prod"
+```
+
+## Database Configuration
+
+### SQLite (Default)
+
+No configuration needed. Data stored in persistence volume at `data/data.db`.
+
+### MySQL
+
+Enable remote MySQL database:
+
+```yaml
+database:
+  type: mysql
+  remote:
+    enabled: true
+    host: mysql.default.svc.cluster.local
+    port: 3306
+    user: alist
+    password: "secure-password"
+    database: alist
+    tablePrefix: x_
+```
+
+### PostgreSQL
+
+Enable remote PostgreSQL database:
+
+```yaml
+database:
+  type: postgres
+  remote:
+    enabled: true
+    host: postgres.default.svc.cluster.local
+    port: 5432
+    user: alist
+    password: "secure-password"
+    database: alist
+    sslMode: "require"
+    tablePrefix: x_
+```
+
+## Protocol Configuration
+
+### WebDAV (Default)
+
+WebDAV is enabled by default. Disable if not needed:
+
+```yaml
+protocols:
+  webdav:
+    enabled: false
+```
+
+### FTP/SFTP
+
+Enable FTP for file transfer:
+
+```yaml
+protocols:
+  ftp:
+    enabled: true
+  sftp:
+    enabled: true
+```
+
+### S3-Compatible API
+
+Enable S3 API support:
+
+```yaml
+protocols:
+  s3:
+    enabled: true
+```
+
+## Performance Tuning
+
+### Connection Limits
+
+Adjust for your deployment size:
+
+```yaml
+performance:
+  maxConnections: 100      # Total DB connections
+  maxConcurrency: 50       # Concurrent operations
+  maxDevices: 10           # Max devices per user
+  deviceSessionTtl: 2592000 # Session timeout (seconds)
+```
+
+### Task Workers
+
+Configure parallel task processing:
+
+```yaml
+performance:
+  taskWorkers:
+    download: 2
+    upload: 2
+    copy: 2
+    decompress: 1
+```
+
+### Rate Limiting
+
+Limit per-client bandwidth (0 = unlimited):
+
+```yaml
+performance:
+  streamMaxClientDownloadSpeed: 0
+  streamMaxClientUploadSpeed: 0
+  streamMaxServerDownloadSpeed: 0
+```
+
+## Logging Configuration
+
+Configure log verbosity and retention:
+
+```yaml
+logging:
+  enabled: true
+  level: "info"      # debug, info, warn, error
+  maxSize: 10        # MB before rotation
+  maxBackups: 5      # Number of backup files
+  maxAge: 30         # Retention days
+```
+
+Logs are stored at `/opt/alist/data/alist.log` in the container.
 
 ## Environment Variables
 
-Configure AList runtime behavior with environment variables:
+Additional runtime variables:
 
 ```yaml
 env:
-  PUID: "1000"          # Container process UID (default: 0 = root)
-  PGID: "1000"          # Container process GID (default: 0 = root)
-  UMASK: "022"          # File creation mask (default: 022)
-  RUN_ARIA2: "true"     # Enable aria2 daemon (requires -aria2 image)
-  TZ: "Asia/Shanghai"   # Timezone (default: UTC)
+  PUID: "1000"          # Container process UID
+  PGID: "1000"          # Container process GID
+  UMASK: "022"          # File creation mask
+  RUN_ARIA2: "true"     # Enable aria2 (requires -aria2 image)
+  TZ: "America/New_York" # Timezone
 ```
 
 Set via CLI:
@@ -112,48 +298,44 @@ helm install alist alist/alist \
   --set env.TZ=America/New_York
 ```
 
+## Access Control
+
+Configure default guest permissions:
+
+```yaml
+access:
+  guestPermission: 7      # Bitmask: 0=none, 7=read-only, 255=most, 65535=admin
+  cors:
+    enabled: false
+```
+
 ## Service & Networking
 
-### HTTP (Default)
-
-HTTP is enabled by default on port 80 (maps to container port 5244):
+### Default (ClusterIP)
 
 ```console
 helm install alist alist/alist
+# HTTP accessible within cluster at alist:80
 ```
 
-### HTTPS (Optional)
-
-Enable optional HTTPS on port 443 (maps to container port 5245):
-
-```console
-helm install alist alist/alist \
-  --set 'service.ports.https.enabled=true'
-```
-
-Via values file:
-
-```yaml
-service:
-  ports:
-    https:
-      enabled: true
-      port: 443
-      targetPort: 5245
-```
-
-### Custom Service Type
-
-For LoadBalancer or NodePort:
+### LoadBalancer (External Access)
 
 ```console
 helm install alist alist/alist \
   --set service.type=LoadBalancer
 ```
 
+### NodePort
+
+```console
+helm install alist alist/alist \
+  --set service.type=NodePort \
+  --set 'service.ports.http.port=30080'
+```
+
 ## Ingress
 
-Example nginx ingress with TLS:
+Example nginx ingress with cert-manager:
 
 ```yaml
 ingress:
@@ -172,32 +354,138 @@ ingress:
         - alist.example.com
 ```
 
-## Configuration
-
-By default, `createConfigFile.enabled=false`, so AList automatically generates a full `config.json` on first startup in `/opt/alist/data`.
-
-Enable config injection only if you want to pre-configure AList:
-
-```console
-helm install alist alist/alist \
-  --set createConfigFile.enabled=true
-```
-
-### Database Configuration
-
-Example MySQL configuration (requires `createConfigFile.enabled=true`):
+## Complete Configuration Example
 
 ```yaml
-createConfigFile:
-  enabled: true
+# values.yaml
+replicaCount: 1
 
-config:
-  site_url: "https://alist.example.com"
-  database:
-    type: mysql
+image:
+  tag: "v3.60.0-aio"
+
+service:
+  type: ClusterIP
+  ports:
+    http:
+      port: 80
+      enabled: true
+
+persistence:
+  enabled: true
+  size: 50Gi
+  storageClassName: fast-ssd
+
+security:
+  jwtSecret: "your-jwt-secret"
+  adminPassword: "your-admin-password"
+  forceHttps: false
+
+database:
+  type: mysql
+  remote:
+    enabled: true
     host: mysql.default.svc.cluster.local
     port: 3306
     user: alist
+    password: "db-password"
+    database: alist
+
+protocols:
+  webdav:
+    enabled: true
+  ftp:
+    enabled: false
+  sftp:
+    enabled: false
+  s3:
+    enabled: false
+
+performance:
+  maxConnections: 100
+  maxConcurrency: 50
+  maxDevices: 10
+  taskWorkers:
+    download: 2
+    upload: 2
+    copy: 2
+    decompress: 1
+
+logging:
+  enabled: true
+  level: "info"
+  maxSize: 10
+  maxBackups: 5
+  maxAge: 30
+
+ingress:
+  enabled: true
+  className: nginx
+  hosts:
+    - host: alist.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+```
+
+Install with custom configuration:
+
+```console
+helm install alist alist/alist -f custom-values.yaml
+```
+
+## Access AList
+
+Get the service endpoint:
+
+```console
+kubectl get svc alist
+```
+
+Port-forward for local access:
+
+```console
+kubectl port-forward svc/alist 8080:80
+# Access at http://localhost:8080
+```
+
+Get admin credentials:
+
+```console
+# AList will prompt for admin password on first login
+# Or check pod logs: kubectl logs deployment/alist
+```
+
+## Troubleshooting
+
+View pod logs:
+
+```console
+kubectl logs deployment/alist
+```
+
+Check resource usage:
+
+```console
+kubectl top pod -l app.kubernetes.io/name=alist
+```
+
+Verify persistence:
+
+```console
+kubectl get pvc
+kubectl describe pvc alist
+```
+
+## Resources & Documentation
+
+- [AList Official Documentation](https://alist.nn.ci/)
+- [AList GitHub Repository](https://github.com/AlistGo/alist)
+- [AList Helm Chart Repository](https://github.com/phenix3443/charts)
+- [AList Docker Hub](https://hub.docker.com/r/xhofe/alist)
+
+## License
+
+This Helm chart is licensed under AGPL-3.0. AList itself is licensed under AGPL-3.0-only.
     password: change-me
     name: alist
 ```

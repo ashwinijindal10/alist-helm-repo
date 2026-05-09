@@ -69,10 +69,100 @@ spec:
               containerPort: {{ .Values.service.ports.https.targetPort }}
               protocol: TCP
             {{- end }}
-          {{- with .Values.env }}
           env:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
+            {{- if .Values.security.jwtSecret }}
+            - name: JWT_SECRET
+              value: {{ .Values.security.jwtSecret | quote }}
+            {{- end }}
+            {{- if .Values.security.adminPassword }}
+            - name: ADMIN_PASSWORD
+              value: {{ .Values.security.adminPassword | quote }}
+            {{- end }}
+            {{- if .Values.security.forceHttps }}
+            - name: FORCE_HTTPS
+              value: "true"
+            {{- end }}
+            {{- if eq .Values.database.type "mysql" }}
+            - name: DB_TYPE
+              value: "mysql"
+            - name: DB_HOST
+              value: {{ .Values.database.remote.host | quote }}
+            - name: DB_PORT
+              value: {{ .Values.database.remote.port | quote }}
+            - name: DB_USER
+              value: {{ .Values.database.remote.user | quote }}
+            - name: DB_PASSWORD
+              value: {{ .Values.database.remote.password | quote }}
+            - name: DB_NAME
+              value: {{ .Values.database.remote.database | quote }}
+            {{- else if eq .Values.database.type "postgres" }}
+            - name: DB_TYPE
+              value: "postgres"
+            - name: DB_HOST
+              value: {{ .Values.database.remote.host | quote }}
+            - name: DB_PORT
+              value: {{ .Values.database.remote.port | quote }}
+            - name: DB_USER
+              value: {{ .Values.database.remote.user | quote }}
+            - name: DB_PASSWORD
+              value: {{ .Values.database.remote.password | quote }}
+            - name: DB_NAME
+              value: {{ .Values.database.remote.database | quote }}
+            - name: DB_SSL_MODE
+              value: {{ .Values.database.remote.sslMode | quote }}
+            {{- end }}
+            {{- if .Values.protocols.webdav.enabled }}
+            - name: WEBDAV_ENABLE
+              value: "true"
+            {{- end }}
+            {{- if .Values.protocols.ftp.enabled }}
+            - name: FTP_ENABLE
+              value: "true"
+            {{- end }}
+            {{- if .Values.protocols.sftp.enabled }}
+            - name: SFTP_ENABLE
+              value: "true"
+            {{- end }}
+            {{- if .Values.protocols.s3.enabled }}
+            - name: S3_ENABLE
+              value: "true"
+            {{- end }}
+            - name: MAX_CONNECTIONS
+              value: {{ .Values.performance.maxConnections | quote }}
+            - name: MAX_CONCURRENCY
+              value: {{ .Values.performance.maxConcurrency | quote }}
+            - name: MAX_DEVICES
+              value: {{ .Values.performance.maxDevices | quote }}
+            - name: DEVICE_SESSION_TTL
+              value: {{ .Values.performance.deviceSessionTtl | quote }}
+            {{- if gt .Values.performance.streamMaxClientDownloadSpeed 0.0 }}
+            - name: STREAM_MAX_CLIENT_DOWNLOAD_SPEED
+              value: {{ .Values.performance.streamMaxClientDownloadSpeed | quote }}
+            {{- end }}
+            {{- if gt .Values.performance.streamMaxClientUploadSpeed 0.0 }}
+            - name: STREAM_MAX_CLIENT_UPLOAD_SPEED
+              value: {{ .Values.performance.streamMaxClientUploadSpeed | quote }}
+            {{- end }}
+            {{- if .Values.logging.enabled }}
+            - name: LOG_ENABLE
+              value: "true"
+            - name: LOG_LEVEL
+              value: {{ .Values.logging.level | quote }}
+            - name: LOG_MAX_SIZE
+              value: {{ .Values.logging.maxSize | quote }}
+            - name: LOG_MAX_BACKUPS
+              value: {{ .Values.logging.maxBackups | quote }}
+            - name: LOG_MAX_AGE
+              value: {{ .Values.logging.maxAge | quote }}
+            {{- end }}
+            {{- if .Values.access.cors.enabled }}
+            - name: CORS_ENABLED
+              value: "true"
+            {{- end }}
+            {{- range $key, $value := .Values.env }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
           livenessProbe:
             httpGet:
               path: /api/v3/server/info

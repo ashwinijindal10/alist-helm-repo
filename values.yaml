@@ -147,21 +147,122 @@ persistence:
 podPortName: alist
 
 ## Environment variables for the AList container
-## Supported: PUID, PGID, UMASK, RUN_ARIA2, TZ
-## Examples:
-##   PUID: "0"          - Container process UID (0 = root)
-##   PGID: "0"          - Container process GID (0 = root)
-##   UMASK: "022"       - File creation mask (octal)
-##   RUN_ARIA2: "true"  - Enable aria2 daemon (only with -aria2 image variant)
-##   TZ: "UTC"          - Timezone (e.g., Asia/Shanghai, Europe/London)
+## Specify as a key-value map. Values can be strings or numbers.
 env: {}
   # PUID: "0"
   # PGID: "0"
   # UMASK: "022"
+  # RUN_ARIA2: "true"
   # TZ: "UTC"
+
+################################################################################
+## SECURITY CONFIGURATION
+################################################################################
+security:
+  ## JWT token secret for authentication (generate with: openssl rand -base64 32)
+  jwtSecret: ""
+  
+  ## Admin password (initial login, will be prompted on first startup if not set)
+  adminPassword: ""
+  
+  ## Force HTTPS redirect (requires TLS certificate)
+  forceHttps: false
+  
+  ## TLS certificate configuration
+  tls:
+    enabled: false
+
+################################################################################
+## DATABASE CONFIGURATION
+################################################################################
+database:
+  ## Database type: sqlite3 (default), mysql, postgres
+  type: sqlite3
+  
+  ## SQLite configuration (default)
+  sqlite:
+    path: data/data.db
+  
+  ## Remote database (MySQL/PostgreSQL)
+  remote:
+    enabled: false
+    # type: mysql
+    # host: db.example.com
+    # port: 3306
+    # user: alist
+    # password: ""
+    # database: alist
+    # sslMode: ""
+    # tablePrefix: x_
+
+################################################################################
+## PROTOCOL SUPPORT
+################################################################################
+protocols:
+  ## WebDAV protocol support
+  webdav:
+    enabled: true
+    
+  ## FTP/SFTP support
+  ftp:
+    enabled: false
+  
+  sftp:
+    enabled: false
+  
+  ## S3-compatible API support
+  s3:
+    enabled: false
+
+################################################################################
+## PERFORMANCE & LIMITS
+################################################################################
+performance:
+  ## Connection limits
+  maxConnections: 100
+  maxConcurrency: 50
+  
+  ## Device/Session management
+  maxDevices: 10
+  deviceSessionTtl: 2592000
+  
+  ## Rate limiting (0 = unlimited)
+  streamMaxClientDownloadSpeed: 0
+  streamMaxClientUploadSpeed: 0
+  streamMaxServerDownloadSpeed: 0
+  
+  ## Task workers
+  taskWorkers:
+    download: 2
+    upload: 2
+    copy: 2
+    decompress: 1
+
+################################################################################
+## LOGGING CONFIGURATION
+################################################################################
+logging:
+  enabled: true
+  level: "info"
+  maxSize: 10
+  maxBackups: 5
+  maxAge: 30
+
+################################################################################
+## ACCESS CONTROL
+################################################################################
+access:
+  ## Default guest permissions (bitmask)
+  guestPermission: 7
+  
+  ## CORS support
+  cors:
+    enabled: false
+################################################################################
+## ADVANCED: Manual config.json Creation
+################################################################################
 createConfigFile:
-  ## If true, config.json will be written from .Values.config at startup.
-  ## Leave disabled to let AList generate its full default config on first run.
+  ## WARNING: Only enable if you need to override auto-generated config
   ##
   enabled: false
   image:
@@ -175,17 +276,22 @@ test:
     tag: "latest"
     pullPolicy: IfNotPresent
 
-## AList configuration (only used when createConfigFile.enabled=true)
-##
-## IMPORTANT: By default, createConfigFile.enabled=false, which means AList will
-## automatically generate a full config.json on first startup. This section is only
-## used if you explicitly enable createConfigFile.enabled=true.
-##
-## Values in this map are converted to JSON format.
-## Ref: https://alist.nn.ci/guide/config/configuration.html
+## Full AList configuration (JSON format, only used if createConfigFile.enabled=true)
+## Reference: https://alist.nn.ci/guide/config/configuration.html
 ##
 config:
   site_url: ""
+  site_title: "AList"
+  max_connections: 100
+  max_concurrency: 50
+  jwt_secret: ""
+  log:
+    enable: true
+    name: ""
+    level: ""
+    max_size: 10
+    max_backups: 5
+    max_age: 30
   database:
     type: sqlite3
     host: ""
