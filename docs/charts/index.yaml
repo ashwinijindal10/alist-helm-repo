@@ -10,6 +10,8 @@ entries:
           description: Apply namespaceOverride consistently to namespaced resources.
         - kind: fixed
           description: Render config.json as stable pretty JSON.
+        - kind: fixed
+          description: Let AList generate its default config unless createConfigFile is explicitly enabled.
       artifacthub.io/license: AGPL-3.0-only
       artifacthub.io/links: |
         - name: support
@@ -18,7 +20,42 @@ entries:
           url: https://github.com/AlistGo/alist
     apiVersion: v2
     appVersion: v3.60.0
-    created: "2026-05-09T17:04:54.681649+05:30"
+    created: "2026-05-09T17:06:49.437022+05:30"
+    description: A file list program that supports multiple storage, powered by Gin
+      and Solidjs.
+    digest: e6d3777d0ec669a4db90a1599aab43dc513bcdb41664c5ac62d4c13f17395aff
+    home: https://alist.nn.ci/
+    icon: https://tinyurl.com/23gfch92
+    kubeVersion: '>=1.23.0-0'
+    maintainers:
+    - email: phenix3443@gmail.com
+      name: phenix3443
+      url: https://blog.panghuli.cn/
+    name: alist
+    sources:
+    - https://github.com/AlistGo/alist
+    type: application
+    urls:
+    - https://ashwinijindal10.github.io/alist-helm-repo/charts/alist-0.1.7.tgz
+    version: 0.1.7
+  - annotations:
+      artifacthub.io/category: storage
+      artifacthub.io/changes: |
+        - kind: changed
+          description: Updated AList image and chart metadata to v3.60.0.
+        - kind: fixed
+          description: Apply namespaceOverride consistently to namespaced resources.
+        - kind: fixed
+          description: Render config.json as stable pretty JSON.
+      artifacthub.io/license: AGPL-3.0-only
+      artifacthub.io/links: |
+        - name: support
+          url: https://github.com/phenix3443/charts
+        - name: Upstream Project
+          url: https://github.com/AlistGo/alist
+    apiVersion: v2
+    appVersion: v3.60.0
+    created: "2026-05-09T17:06:49.436606+05:30"
     description: A file list program that supports multiple storage, powered by Gin
       and Solidjs.
     digest: edc309bea017790ee8a4b02f3a8819d429ae10186a9baaf3f98dd081b36814d2
@@ -36,4 +73,4 @@ entries:
     urls:
     - https://ashwinijindal10.github.io/alist-helm-repo/charts/alist-0.1.6.tgz
     version: 0.1.6
-generated: "2026-05-09T17:04:54.681005+05:30"
+generated: "2026-05-09T17:06:49.435519+05:30"

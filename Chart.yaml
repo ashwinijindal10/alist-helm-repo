@@ -7,6 +7,8 @@ annotations:
       description: Apply namespaceOverride consistently to namespaced resources.
     - kind: fixed
       description: Render config.json as stable pretty JSON.
+    - kind: fixed
+      description: Let AList generate its default config unless createConfigFile is explicitly enabled.
   artifacthub.io/license: AGPL-3.0-only
   artifacthub.io/links: |
     - name: support
@@ -28,4 +30,4 @@ name: alist
 sources:
 - https://github.com/AlistGo/alist
 type: application
-version: 0.1.6
+version: 0.1.7

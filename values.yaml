@@ -129,10 +129,10 @@ persistence:
 podPortName: alist
 
 createConfigFile:
-  ## If false, config.json will not be init at startup
-  ## This allows the alist to be run with an config file
+  ## If true, config.json will be written from .Values.config at startup.
+  ## Leave disabled to let AList generate its full default config on first run.
   ##
-  enabled: true
+  enabled: false
   image:
     repository: docker.io/library/busybox
     tag: "latest"
@@ -146,14 +146,18 @@ test:
 
 ## alist's primary configuration
 ## NOTE: values in map will be converted to json format
-## ref: https://alist.nn.ci/zh/config/configuration.html
+## ref: https://alist-repo.github.io/docs/config/configuration.html
 ##
 config:
   site_url: ""
   database:
-    type: mysql
-    host: mysql.local
-    port: 3306
-    user: alist
-    password: alist@password
-    name: alist
+    type: sqlite3
+    host: ""
+    port: 0
+    user: ""
+    password: ""
+    name: ""
+    db_file: data/data.db
+    table_prefix: x_
+    ssl_mode: ""
+    dsn: ""

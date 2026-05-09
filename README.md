@@ -7,7 +7,7 @@ program that supports multiple storage backends.
 
 | Component | Version |
 | --- | --- |
-| Chart | `0.1.6` |
+| Chart | `0.1.7` |
 | AList app | `v3.60.0` |
 | Default image | `xhofe/alist:v3.60.0` |
 
@@ -67,9 +67,17 @@ helm upgrade --install alist alist/alist \
 
 ## Configuration
 
-When `createConfigFile.enabled=true`, the chart renders `.Values.config` into
-`config.json` and copies it into AList's data directory before the main
-container starts.
+By default, `createConfigFile.enabled=false`, so AList `v3.60.0` generates its
+own full `config.json` on first startup in `/opt/alist/data`.
+
+Enable `createConfigFile` only when you want the chart to render `.Values.config`
+into `config.json` and copy it into AList's data directory before the main
+container starts:
+
+```console
+helm upgrade --install alist alist/alist \
+  --set createConfigFile.enabled=true
+```
 
 Example MySQL configuration:
 
@@ -123,7 +131,7 @@ ingress:
 | `ingress.enabled` | `false` | Create an Ingress resource. |
 | `persistence.enabled` | `false` | Create or use a PVC for `/opt/alist/data`. |
 | `persistence.size` | `10Gi` | PVC size when creating a claim. |
-| `createConfigFile.enabled` | `true` | Generate and copy `config.json` at startup. |
+| `createConfigFile.enabled` | `false` | Generate and copy `config.json` at startup. |
 | `namespaceOverride` | `""` | Render namespaced resources into another namespace. |
 | `autoscaling.enabled` | `false` | Create a HorizontalPodAutoscaler. |
 
