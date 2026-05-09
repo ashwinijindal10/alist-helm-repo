@@ -23,25 +23,25 @@ helm repo update
 Install from the Helm repository:
 
 ```console
-helm install my-release alist/alist
+helm install alist alist/alist
 ```
 
 Install from this local chart checkout:
 
 ```console
-helm install my-release .
+helm install alist .
 ```
 
 ## Upgrade
 
 ```console
-helm upgrade my-release alist/alist
+helm upgrade alist alist/alist
 ```
 
 To pin or override the AList image tag:
 
 ```console
-helm upgrade --install my-release alist/alist \
+helm upgrade --install alist alist/alist \
   --set image.repository=xhofe/alist \
   --set image.tag=v3.60.0
 ```
@@ -52,7 +52,7 @@ Persistence is disabled by default. Enable it for real deployments so AList
 configuration and runtime data survive pod restarts:
 
 ```console
-helm upgrade --install my-release alist/alist \
+helm upgrade --install alist alist/alist \
   --set persistence.enabled=true \
   --set persistence.size=10Gi
 ```
@@ -60,7 +60,7 @@ helm upgrade --install my-release alist/alist \
 Use an existing PVC:
 
 ```console
-helm upgrade --install my-release alist/alist \
+helm upgrade --install alist alist/alist \
   --set persistence.enabled=true \
   --set persistence.existingClaim=my-alist-data
 ```
@@ -89,7 +89,7 @@ If you manage `config.json` yourself through an existing volume or image,
 disable generated config:
 
 ```console
-helm upgrade --install my-release alist/alist \
+helm upgrade --install alist alist/alist \
   --set createConfigFile.enabled=false
 ```
 
@@ -130,13 +130,13 @@ ingress:
 ## Test
 
 ```console
-helm test my-release
+helm test alist
 ```
 
 ## Uninstall
 
 ```console
-helm uninstall my-release
+helm uninstall alist
 ```
 
 The uninstall command removes Kubernetes resources managed by the release. PVCs
