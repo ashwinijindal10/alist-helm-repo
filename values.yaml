@@ -138,6 +138,12 @@ createConfigFile:
     tag: "latest"
     pullPolicy: IfNotPresent
 
+test:
+  image:
+    repository: docker.io/library/busybox
+    tag: "latest"
+    pullPolicy: IfNotPresent
+
 ## alist's primary configuration
 ## NOTE: values in map will be converted to json format
 ## ref: https://alist.nn.ci/zh/config/configuration.html

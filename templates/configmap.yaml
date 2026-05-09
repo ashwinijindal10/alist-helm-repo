@@ -12,5 +12,5 @@ metadata:
   {{- end }}
 data:
   config.json: |
-    {{ toJson .Values.config }}
+    {{- toPrettyJson .Values.config | nindent 4 }}
 {{- end }}
