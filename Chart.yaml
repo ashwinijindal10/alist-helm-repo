@@ -1,22 +1,22 @@
 annotations:
   artifacthub.io/category: storage
   artifacthub.io/changes: |
-    - kind: fixed
-      description: Enable persistence by default to prevent data loss on pod restart.
-    - kind: fixed
-      description: Add liveness and readiness probes for automatic failure recovery.
     - kind: added
-      description: Support environment variables (PUID, PGID, UMASK, RUN_ARIA2, TZ).
+      description: Comprehensive security configuration (JWT secret, admin password, TLS/HTTPS).
     - kind: added
-      description: Add optional HTTPS port (5245) support.
+      description: Multi-database support (SQLite, MySQL, PostgreSQL) with remote DB configuration.
     - kind: added
-      description: Document AList image variants (-aio, -ffmpeg, -aria2).
+      description: Protocol toggles for WebDAV (default), FTP, SFTP, and S3-compatible API.
+    - kind: added
+      description: Performance tuning options (connection limits, concurrency, rate limiting, task workers).
+    - kind: added
+      description: Logging configuration (level, rotation, retention policies).
+    - kind: added
+      description: Access control configuration (guest permissions, CORS support).
     - kind: changed
-      description: Change inMemory.enabled default from true to false.
+      description: Environment variables now comprehensively mapped from values (30+ settings).
     - kind: changed
-      description: Update service configuration to use ports.http/https structure.
-    - kind: changed
-      description: Rewrite README with comprehensive documentation and examples.
+      description: Expanded README with security, database, protocol, and performance guides.
   artifacthub.io/license: AGPL-3.0-only
   artifacthub.io/links: |
     - name: support
@@ -25,8 +25,7 @@ annotations:
       url: https://github.com/AlistGo/alist
 apiVersion: v2
 appVersion: v3.60.0
-description: A file list program that supports multiple storage, powered by Gin and
-  Solidjs.
+description: A file list program that supports multiple storage backends with comprehensive security, database, protocol, and performance configuration options, powered by Gin and Solidjs.
 home: https://alist.nn.ci/
 icon: https://tinyurl.com/23gfch92
 kubeVersion: '>=1.23.0-0'
@@ -38,4 +37,4 @@ name: alist
 sources:
 - https://github.com/AlistGo/alist
 type: application
-version: 0.2.0
+version: 0.3.0
