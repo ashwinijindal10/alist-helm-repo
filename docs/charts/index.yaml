@@ -1,0 +1,39 @@
+apiVersion: v1
+entries:
+  alist:
+  - annotations:
+      artifacthub.io/category: storage
+      artifacthub.io/changes: |
+        - kind: changed
+          description: Updated AList image and chart metadata to v3.60.0.
+        - kind: fixed
+          description: Apply namespaceOverride consistently to namespaced resources.
+        - kind: fixed
+          description: Render config.json as stable pretty JSON.
+      artifacthub.io/license: AGPL-3.0-only
+      artifacthub.io/links: |
+        - name: support
+          url: https://github.com/phenix3443/charts
+        - name: Upstream Project
+          url: https://github.com/AlistGo/alist
+    apiVersion: v2
+    appVersion: v3.60.0
+    created: "2026-05-09T16:55:44.95931+05:30"
+    description: A file list program that supports multiple storage, powered by Gin
+      and Solidjs.
+    digest: 58bb45ae9ee12f6d7934244dc4b57de85758e7a570c9c062fff10f1d17cc247d
+    home: https://alist.nn.ci/
+    icon: https://tinyurl.com/23gfch92
+    kubeVersion: '>=1.23.0-0'
+    maintainers:
+    - email: phenix3443@gmail.com
+      name: phenix3443
+      url: https://blog.panghuli.cn/
+    name: alist
+    sources:
+    - https://github.com/AlistGo/alist
+    type: application
+    urls:
+    - https://ashwinijindal10.github.io/charts/alist-0.1.6.tgz
+    version: 0.1.6
+generated: "2026-05-09T16:55:44.958434+05:30"

@@ -14,7 +14,7 @@ program that supports multiple storage backends.
 ## Repository
 
 ```console
-helm repo add panghuli https://charts.panghuli.cn
+helm repo add alist https://ashwinijindal10.github.io/charts
 helm repo update
 ```
 
@@ -23,7 +23,7 @@ helm repo update
 Install from the Helm repository:
 
 ```console
-helm install my-release panghuli/alist
+helm install my-release alist/alist
 ```
 
 Install from this local chart checkout:
@@ -35,13 +35,13 @@ helm install my-release .
 ## Upgrade
 
 ```console
-helm upgrade my-release panghuli/alist
+helm upgrade my-release alist/alist
 ```
 
 To pin or override the AList image tag:
 
 ```console
-helm upgrade --install my-release panghuli/alist \
+helm upgrade --install my-release alist/alist \
   --set image.repository=xhofe/alist \
   --set image.tag=v3.60.0
 ```
@@ -52,7 +52,7 @@ Persistence is disabled by default. Enable it for real deployments so AList
 configuration and runtime data survive pod restarts:
 
 ```console
-helm upgrade --install my-release panghuli/alist \
+helm upgrade --install my-release alist/alist \
   --set persistence.enabled=true \
   --set persistence.size=10Gi
 ```
@@ -60,7 +60,7 @@ helm upgrade --install my-release panghuli/alist \
 Use an existing PVC:
 
 ```console
-helm upgrade --install my-release panghuli/alist \
+helm upgrade --install my-release alist/alist \
   --set persistence.enabled=true \
   --set persistence.existingClaim=my-alist-data
 ```
@@ -89,7 +89,7 @@ If you manage `config.json` yourself through an existing volume or image,
 disable generated config:
 
 ```console
-helm upgrade --install my-release panghuli/alist \
+helm upgrade --install my-release alist/alist \
   --set createConfigFile.enabled=false
 ```
 
