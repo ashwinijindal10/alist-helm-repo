@@ -8,9 +8,17 @@ metadata:
 spec:
   type: {{ .Values.service.type }}
   ports:
-    - port: {{ .Values.service.port }}
-      targetPort: {{ .Values.service.targetPort }}
+    {{- if .Values.service.ports.http.enabled }}
+    - port: {{ .Values.service.ports.http.port }}
+      targetPort: {{ .Values.service.ports.http.targetPort }}
       protocol: TCP
       name: http
+    {{- end }}
+    {{- if .Values.service.ports.https.enabled }}
+    - port: {{ .Values.service.ports.https.port }}
+      targetPort: {{ .Values.service.ports.https.targetPort }}
+      protocol: TCP
+      name: https
+    {{- end }}
   selector:
     {{- include "alist.selectorLabels" . | nindent 4 }}

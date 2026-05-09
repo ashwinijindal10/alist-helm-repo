@@ -1,14 +1,22 @@
 annotations:
   artifacthub.io/category: storage
   artifacthub.io/changes: |
+    - kind: fixed
+      description: Enable persistence by default to prevent data loss on pod restart.
+    - kind: fixed
+      description: Add liveness and readiness probes for automatic failure recovery.
+    - kind: added
+      description: Support environment variables (PUID, PGID, UMASK, RUN_ARIA2, TZ).
+    - kind: added
+      description: Add optional HTTPS port (5245) support.
+    - kind: added
+      description: Document AList image variants (-aio, -ffmpeg, -aria2).
     - kind: changed
-      description: Updated AList image and chart metadata to v3.60.0.
-    - kind: fixed
-      description: Apply namespaceOverride consistently to namespaced resources.
-    - kind: fixed
-      description: Render config.json as stable pretty JSON.
-    - kind: fixed
-      description: Let AList generate its default config unless createConfigFile is explicitly enabled.
+      description: Change inMemory.enabled default from true to false.
+    - kind: changed
+      description: Update service configuration to use ports.http/https structure.
+    - kind: changed
+      description: Rewrite README with comprehensive documentation and examples.
   artifacthub.io/license: AGPL-3.0-only
   artifacthub.io/links: |
     - name: support
@@ -30,4 +38,4 @@ name: alist
 sources:
 - https://github.com/AlistGo/alist
 type: application
-version: 0.1.7
+version: 0.2.0

@@ -8,6 +8,13 @@ image:
   repository: xhofe/alist
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
+  # Available tags:
+  #   v3.60.0           - Default stable version
+  #   v3.60.0-aio       - All-in-one with ffmpeg + aria2
+  #   v3.60.0-ffmpeg    - With ffmpeg for thumbnail generation
+  #   v3.60.0-aria2     - With aria2 for offline downloads
+  #   latest            - Latest stable
+  #   beta              - Development version
   tag: "v3.60.0"
 
 imagePullSecrets: []
@@ -23,7 +30,10 @@ serviceAccount:
   # If not set and create is true, a name is generated using the fullname template
   name: ""
 
-podAnnotations: {}
+podAnnotations:
+  {}
+  # Configure pod labels and annotations for monitoring/telemetry
+  # Example: prometheus.io/scrape: "true"
 
 podSecurityContext:
   {}
@@ -40,8 +50,15 @@ securityContext:
 
 service:
   type: ClusterIP
-  port: 80
-  targetPort: 5244
+  ports:
+    http:
+      port: 80
+      targetPort: 5244
+      enabled: true
+    https:
+      port: 443
+      targetPort: 5245
+      enabled: false
 
 ingress:
   enabled: false
@@ -99,7 +116,7 @@ annotations: {}
 ##
 persistence:
   type: pvc
-  enabled: false
+  enabled: true
   storageClassName: default
   accessModes:
     - ReadWriteOnce
@@ -119,15 +136,29 @@ persistence:
   ## local storage in-memory to improve performance
   ##
   inMemory:
-    enabled: true
+    enabled: false
     ## The maximum usage on memory medium EmptyDir would be
     ## the minimum value between the SizeLimit specified
     ## here and the sum of memory limits of all containers in a pod
     ##
     # sizeLimit: 300Mi
 
+## Pod port name - used for both HTTP and HTTPS probes
 podPortName: alist
 
+## Environment variables for the AList container
+## Supported: PUID, PGID, UMASK, RUN_ARIA2, TZ
+## Examples:
+##   PUID: "0"          - Container process UID (0 = root)
+##   PGID: "0"          - Container process GID (0 = root)
+##   UMASK: "022"       - File creation mask (octal)
+##   RUN_ARIA2: "true"  - Enable aria2 daemon (only with -aria2 image variant)
+##   TZ: "UTC"          - Timezone (e.g., Asia/Shanghai, Europe/London)
+env: {}
+  # PUID: "0"
+  # PGID: "0"
+  # UMASK: "022"
+  # TZ: "UTC"
 createConfigFile:
   ## If true, config.json will be written from .Values.config at startup.
   ## Leave disabled to let AList generate its full default config on first run.
@@ -144,9 +175,14 @@ test:
     tag: "latest"
     pullPolicy: IfNotPresent
 
-## alist's primary configuration
-## NOTE: values in map will be converted to json format
-## ref: https://alist-repo.github.io/docs/config/configuration.html
+## AList configuration (only used when createConfigFile.enabled=true)
+##
+## IMPORTANT: By default, createConfigFile.enabled=false, which means AList will
+## automatically generate a full config.json on first startup. This section is only
+## used if you explicitly enable createConfigFile.enabled=true.
+##
+## Values in this map are converted to JSON format.
+## Ref: https://alist.nn.ci/guide/config/configuration.html
 ##
 config:
   site_url: ""

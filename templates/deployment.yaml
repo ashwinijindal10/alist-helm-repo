@@ -59,9 +59,36 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-            - name: {{ .Values.podPortName }}
-              containerPort: {{ .Values.service.targetPort }}
+            {{- if .Values.service.ports.http.enabled }}
+            - name: http
+              containerPort: {{ .Values.service.ports.http.targetPort }}
               protocol: TCP
+            {{- end }}
+            {{- if .Values.service.ports.https.enabled }}
+            - name: https
+              containerPort: {{ .Values.service.ports.https.targetPort }}
+              protocol: TCP
+            {{- end }}
+          {{- with .Values.env }}
+          env:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          livenessProbe:
+            httpGet:
+              path: /api/v3/server/info
+              port: {{ .Values.service.ports.http.targetPort }}
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /api/v3/server/info
+              port: {{ .Values.service.ports.http.targetPort }}
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 2
           volumeMounts:
             - name: storage
               mountPath: "/opt/alist/data"
