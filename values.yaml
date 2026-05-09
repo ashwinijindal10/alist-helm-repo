@@ -177,23 +177,55 @@ security:
 ################################################################################
 database:
   ## Database type: sqlite3 (default), mysql, postgres
+  ## - sqlite3: Local file-based database (no remote connection needed)
+  ## - mysql: Remote MySQL/MariaDB server
+  ## - postgres: Remote PostgreSQL server
   type: sqlite3
   
-  ## SQLite configuration (default)
+  ## SQLite configuration (default, enabled when type: sqlite3)
+  ## SQLite requires no external configuration - data stored locally in PVC
   sqlite:
     path: data/data.db
   
-  ## Remote database (MySQL/PostgreSQL)
+  ## Remote database configuration (MySQL/PostgreSQL)
+  ## Enable this section when using external database
   remote:
     enabled: false
-    # type: mysql
+    
+    ## Database host and port
     # host: db.example.com
     # port: 3306
+    
+    ## Authentication
     # user: alist
     # password: ""
+    
+    ## Database name and table prefix
     # database: alist
-    # sslMode: ""
     # tablePrefix: x_
+    
+    ## PostgreSQL SSL/TLS Mode (PostgreSQL only)
+    ## Options by security level:
+    ##   disable      - No SSL (local/trusted networks only)
+    ##   allow        - SSL optional, fallback to non-SSL
+    ##   prefer       - Try SSL first, fallback to non-SSL (default for postgres)
+    ##   require      - SSL mandatory, no CA verification (RECOMMENDED for production)
+    ##   verify-ca    - SSL + verify CA certificate (MAXIMUM security)
+    ##   verify-full  - SSL + verify CA + hostname match (MAXIMUM security)
+    ##
+    ## Recommended values by environment:
+    ##   Development:  sslMode: "disable"
+    ##   Staging:      sslMode: "prefer"
+    ##   Production:   sslMode: "require"        (or "verify-ca" for max security)
+    ##
+    # sslMode: "require"
+    
+    ## MySQL SSL/TLS Configuration (if needed for MySQL)
+    ## Uncomment and configure if using MySQL with SSL:
+    # sslEnabled: false
+    # tlsCertPath: ""
+    # tlsKeyPath: ""
+    # tlsCaPath: ""
 
 ################################################################################
 ## PROTOCOL SUPPORT

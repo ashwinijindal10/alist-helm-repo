@@ -4,11 +4,13 @@ This chart installs [AList](https://alist.nn.ci/), a file list and WebDAV progra
 
 ## Versions
 
-| Component | Version |
-| --- | --- |
-| Chart | `0.2.0` |
-| AList app | `v3.60.0` |
-| Default image | `xhofe/alist:v3.60.0` |
+| Component | Version | Notes |
+| --- | --- | --- |
+| Chart | `0.3.0` | Latest (production-ready) |
+| AList app | `v3.60.0` | Upstream application version |
+| Default image | `xhofe/alist:v3.60.0` | Standard deployment |
+| Helm API | `v2` | Helm 3.0+ required |
+| Kubernetes | `>=1.23.0` | Minimum version |
 
 ## Repository
 
@@ -35,6 +37,298 @@ Upgrade existing installation:
 
 ```console
 helm upgrade alist alist/alist
+```
+
+## Building the Chart
+
+### Prerequisites
+
+- Helm 3.0+
+- kubectl configured to your cluster
+- Git (for version management)
+
+### Lint and Validate
+
+Validate chart syntax and structure:
+
+```console
+helm lint .
+```
+
+Expected output:
+```
+==> Linting .
+
+1 chart(s) linted, 0 chart(s) failed
+```
+
+### Template Preview & Testing
+
+Preview rendered Kubernetes manifests:
+
+```console
+# Preview with default values
+helm template alist . --values values.yaml
+
+# Preview with custom values
+helm template alist . -f custom-values.yaml
+
+# Preview for dry-run
+helm install alist . --dry-run --debug
+```
+
+### Run Chart Locally
+
+Test chart installation on local cluster (Minikube/Kind):
+
+```console
+# 1. Lint first
+helm lint .
+
+# 2. Dry-run to validate
+helm install alist . --dry-run --debug
+
+# 3. Install to cluster
+helm install alist .
+
+# 4. Verify installation
+kubectl get pods -l app.kubernetes.io/name=alist
+kubectl logs deployment/alist
+
+# 5. Port-forward for testing
+kubectl port-forward svc/alist 8080:80
+# Access: http://localhost:8080
+
+# 6. Uninstall
+helm uninstall alist
+```
+
+### Package the Chart
+
+Create a `.tgz` chart package for distribution:
+
+```console
+# Package chart
+helm package . -d docs/charts/
+
+# List packaged charts
+ls -lah docs/charts/*.tgz
+```
+
+### Generate Repository Index
+
+Update repository index for GitHub Pages hosting:
+
+```console
+helm repo index docs/charts/ \
+  --url https://ashwinijindal10.github.io/alist-helm-repo/charts
+```
+
+## Releasing a New Version
+
+### 1. Update Chart Version
+
+Edit `Chart.yaml`:
+
+```yaml
+version: 0.3.0          # Increment from previous (e.g., 0.2.0 → 0.3.0)
+appVersion: v3.60.0     # Update if AList app version changed
+```
+
+### 2. Update README Version Table
+
+Update version table at top of README.md:
+
+```markdown
+| Chart | `0.3.0` | Latest (production-ready) |
+| AList app | `v3.60.0` | Upstream application version |
+```
+
+### 3. Update Chart.yaml Annotations
+
+Document changes in `Chart.yaml` under `artifacthub.io/changes`:
+
+```yaml
+annotations:
+  artifacthub.io/changes: |
+    - kind: added
+      description: Your new feature description
+    - kind: fixed
+      description: Bug fix description
+    - kind: changed
+      description: Breaking/non-breaking change
+```
+
+### 4. Run Quality Checks
+
+```console
+# Lint the chart
+helm lint .
+
+# Preview templates
+helm template alist . > /tmp/manifest.yaml
+echo "✅ Template valid"
+
+# Test install (dry-run)
+helm install alist . --dry-run --debug
+```
+
+### 5. Build and Package
+
+```console
+# Package the chart
+helm package . -d docs/charts/
+
+# Regenerate index
+helm repo index docs/charts/ \
+  --url https://ashwinijindal10.github.io/alist-helm-repo/charts
+
+# Verify
+ls -lah docs/charts/
+cat docs/charts/index.yaml
+```
+
+### 6. Commit and Release
+
+```bash
+# Stage changes
+git add Chart.yaml README.md values.yaml (any modified files)
+
+# Commit with semantic version message
+git commit -m "chore: bump chart version to 0.3.0
+
+- Updated Chart.yaml with new version
+- Updated README with version table
+- Added v0.3.0 features in annotations"
+
+# Create git tag
+git tag chart-0.3.0
+
+# Push to repository
+git push origin main --tags
+
+# Push packaged charts
+git add docs/charts/
+git commit -m "build: package helm chart v0.3.0"
+git push origin main
+```
+
+### 7. Verify Release
+
+```console
+# Check git history
+git log --oneline -5
+git tag -l
+
+# Verify chart package
+ls -lah docs/charts/alist-*.tgz
+
+# Check repository index
+head docs/charts/index.yaml
+```
+
+### 8. Update Helm Repo (for users)
+
+Users can now fetch the new version:
+
+```bash
+helm repo update alist
+helm install alist alist/alist --version 0.3.0
+```
+
+### Full Release Workflow Example
+
+```bash
+#!/bin/bash
+set -e
+
+echo "🔄 Starting chart release process..."
+
+# 1. Update version
+NEW_VERSION="0.3.0"
+sed -i "" "s/version: .*/version: $NEW_VERSION/" Chart.yaml
+echo "✅ Updated Chart.yaml to v$NEW_VERSION"
+
+# 2. Lint
+helm lint .
+echo "✅ Chart linting passed"
+
+# 3. Template validation
+helm template alist . > /dev/null
+echo "✅ Template validation passed"
+
+# 4. Package
+helm package . -d docs/charts/
+echo "✅ Chart packaged"
+
+# 5. Generate index
+helm repo index docs/charts/ \
+  --url https://ashwinijindal10.github.io/alist-helm-repo/charts
+echo "✅ Repository index generated"
+
+# 6. Git operations
+git add Chart.yaml README.md values.yaml docs/charts/
+git commit -m "chore: release chart v$NEW_VERSION"
+git tag "chart-$NEW_VERSION"
+git push origin main --tags
+echo "✅ Released to GitHub"
+
+echo "🎉 Chart v$NEW_VERSION released successfully!"
+```
+
+Save as `release.sh` and run:
+
+```console
+chmod +x release.sh
+./release.sh
+```
+
+## Testing Locally
+
+```console
+# Lint
+helm lint .
+
+# Validate against cluster
+helm install alist . --dry-run --debug
+
+# Install to local cluster
+helm install alist .
+
+# Verify installation
+kubectl get pods -l app.kubernetes.io/name=alist
+kubectl logs deployment/alist
+
+# Uninstall
+helm uninstall alist
+```
+
+### Full Build Workflow Example
+
+```bash
+#!/bin/bash
+
+# 1. Validate chart
+helm lint .
+
+# 2. Template preview
+helm template alist . > /tmp/alist-manifest.yaml
+echo "✅ Template generated"
+
+# 3. Package chart
+helm package . -d docs/charts/
+echo "✅ Chart packaged"
+
+# 4. Generate repository index
+helm repo index docs/charts/ \
+  --url https://ashwinijindal10.github.io/alist-helm-repo/charts
+echo "✅ Index regenerated"
+
+# 5. Commit and push
+git add docs/charts/
+git commit -m "build: update helm chart package"
+git push origin main
+echo "✅ Released to repository"
 ```
 
 ## Key Features
@@ -154,6 +448,8 @@ security:
 
 No configuration needed. Data stored in persistence volume at `data/data.db`.
 
+Recommended for: Single-node deployments, small installations, development.
+
 ### MySQL
 
 Enable remote MySQL database:
@@ -173,7 +469,9 @@ database:
 
 ### PostgreSQL
 
-Enable remote PostgreSQL database:
+Enable remote PostgreSQL database with environment-specific SSL settings:
+
+#### Development (No SSL)
 
 ```yaml
 database:
@@ -185,9 +483,68 @@ database:
     user: alist
     password: "secure-password"
     database: alist
+    sslMode: "disable"
+    tablePrefix: x_
+```
+
+#### Staging (Optional SSL, Prefer)
+
+```yaml
+database:
+  type: postgres
+  remote:
+    enabled: true
+    host: postgres.staging.example.com
+    port: 5432
+    user: alist
+    password: "secure-password"
+    database: alist
+    sslMode: "prefer"
+    tablePrefix: x_
+```
+
+#### Production (Mandatory SSL)
+
+```yaml
+database:
+  type: postgres
+  remote:
+    enabled: true
+    host: postgres.prod.example.com
+    port: 5432
+    user: alist
+    password: "secure-password"
+    database: alist
     sslMode: "require"
     tablePrefix: x_
 ```
+
+#### Production (Maximum Security)
+
+```yaml
+database:
+  type: postgres
+  remote:
+    enabled: true
+    host: postgres.prod.example.com
+    port: 5432
+    user: alist
+    password: "secure-password"
+    database: alist
+    sslMode: "verify-full"
+    tablePrefix: x_
+```
+
+**SSL Mode Reference:**
+
+| Mode | Description | Security | Use Case |
+| --- | --- | --- | --- |
+| `disable` | No encryption | Low | Local/trusted networks |
+| `allow` | SSL optional, fallback | Medium | Backward compatibility |
+| `prefer` | Try SSL, fallback to plain | Medium | Staging environments |
+| `require` | SSL mandatory, no CA check | High | **Production (Recommended)** |
+| `verify-ca` | SSL + CA certificate verify | Very High | High-security production |
+| `verify-full` | SSL + CA + hostname verify | Maximum | Maximum security production |
 
 ## Protocol Configuration
 
