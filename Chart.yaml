@@ -1,0 +1,27 @@
+annotations:
+  artifacthub.io/category: storage
+  artifacthub.io/changes: |
+    - kind: changed
+      description: updated to v3.24.0
+  artifacthub.io/license: AGPL-3.0-only
+  artifacthub.io/links: |
+    - name: support
+      url: https://github.com/phenix3443/charts
+    - name: Upstream Project
+      url: https://github.com/alist-org/alist
+apiVersion: v2
+appVersion: v3.17.0
+description: A file list program that supports multiple storage, powered by Gin and
+  Solidjs.
+home: https://alist.nn.ci/
+icon: https://tinyurl.com/23gfch92
+kubeVersion: ^1.8.0-0
+maintainers:
+- email: phenix3443@gmail.com
+  name: phenix3443
+  url: https://blog.panghuli.cn/
+name: alist
+sources:
+- https://github.com/alist-org/alist
+type: application
+version: 0.1.5
