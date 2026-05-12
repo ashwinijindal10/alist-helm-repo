@@ -412,19 +412,13 @@ helm install alist alist/alist \
 
 ### Admin Password
 
-Set initial admin password:
-
-```console
-helm install alist alist/alist \
-  --set security.adminPassword='your-secure-password'
-```
-
-**Recommended:** Use Kubernetes Secrets for sensitive data:
+AList automatically generates a random admin password on first startup. Retrieve it from the pod logs:
 
 ```bash
-kubectl create secret generic alist-admin \
-  --from-literal=password='your-secure-password'
+kubectl logs <pod-name> | grep -i password
 ```
+
+The default username is `admin` with the auto-generated password from logs.
 
 ### JWT Secret
 
@@ -439,7 +433,6 @@ Configure in values:
 ```yaml
 security:
   jwtSecret: "your-generated-secret-here"
-  adminPassword: "your-admin-password"
   forceHttps: true
 ```
 
@@ -756,7 +749,6 @@ persistence:
 
 security:
   jwtSecret: "your-jwt-secret"
-  adminPassword: "your-admin-password"
   forceHttps: false
 
 database:

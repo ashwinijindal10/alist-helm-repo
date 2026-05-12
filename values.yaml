@@ -181,9 +181,6 @@ security:
   ## JWT token secret for authentication (generate with: openssl rand -base64 32)
   jwtSecret: ""
   
-  ## Admin password (initial login, will be prompted on first startup if not set)
-  adminPassword: ""
-  
   ## Force HTTPS redirect (requires TLS certificate)
   forceHttps: false
   
