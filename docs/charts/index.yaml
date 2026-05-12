@@ -28,11 +28,11 @@ entries:
           url: https://github.com/AlistGo/alist
     apiVersion: v2
     appVersion: v3.60.0
-    created: "2026-05-12T22:50:56.840246+05:30"
+    created: "2026-05-12T23:06:41.786145+05:30"
     description: A file list program that supports multiple storage backends with
       comprehensive security, database, protocol, and performance configuration options,
       powered by Gin and Solidjs.
-    digest: 610f699de1c109cf0b14eced09a633ae7c87b2382d954667ef0d4b7ee0eb6641
+    digest: 2dadaa7f325e698a315a4f0540705095f31057f60bef02d26c7024348ad89317
     home: https://alist.nn.ci/
     icon: https://tinyurl.com/23gfch92
     kubeVersion: '>=1.23.0-0'
@@ -47,4 +47,4 @@ entries:
     urls:
     - https://ashwinijindal10.github.io/alist-helm-repo/charts/alist-0.3.0.tgz
     version: 0.3.0
-generated: "2026-05-12T22:50:56.838294+05:30"
+generated: "2026-05-12T23:06:41.783947+05:30"

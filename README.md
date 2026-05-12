@@ -343,28 +343,50 @@ echo "✅ Released to repository"
 
 ## Persistence
 
-**Persistence is enabled by default** to preserve AList data across restarts.
+**Persistence is disabled by default** to simplify deployment and avoid storage binding issues.
 
-Disable for temporary testing:
+### Why Disabled by Default?
+
+AList uses MySQL for application data persistence:
+- ✅ File listings, user accounts, storage configs → MySQL (persistent)
+- ✅ Pod-level logs → Lost on restart (acceptable)
+- ✅ Simple deployment without storage class issues
+
+### Enable Persistence (Optional)
+
+Enable if you need pod-level log/config preservation:
 
 ```console
 helm install alist alist/alist \
-  --set persistence.enabled=false
+  --set persistence.enabled=true \
+  --set persistence.storageClassName=longhorn
 ```
 
-Use existing PVC:
+Or in values.yaml:
+
+```yaml
+persistence:
+  enabled: true
+  storageClassName: longhorn    # Use Longhorn for resilient storage
+  size: 10Gi
+```
+
+### Use Existing PVC
 
 ```console
 helm install alist alist/alist \
+  --set persistence.enabled=true \
   --set persistence.existingClaim=my-alist-data
 ```
 
-Increase storage size:
+### Storage Class Recommendations
 
-```console
-helm install alist alist/alist \
-  --set persistence.size=50Gi
-```
+| Storage Class | Binding Mode | Recommendation |
+| --- | --- | --- |
+| `longhorn` | Immediate | ✅ **Recommended** (resilient, no node dependency) |
+| `local-path` | WaitForFirstConsumer | ⚠️ **Node-dependent** (data lost if node fails) |
+| `gp2` (AWS) | Immediate | ✅ Good for AWS |  
+| `standard` (GCP) | Immediate | ✅ Good for GCP |
 
 ## Image Variants
 

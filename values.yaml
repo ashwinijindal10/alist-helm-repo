@@ -114,10 +114,24 @@ annotations: {}
 ## Enable persistence using Persistent Volume Claims
 ## ref: http://kubernetes.io/docs/user-guide/persistent-volumes/
 ##
+## Note: By default, persistence is DISABLED because AList uses MySQL for application data.
+## Application data (files, users, storage configs) is stored in MySQL and persists across restarts.
+## Enable persistence only if you need to preserve pod-level logs and temporary configurations.
+##
+## When disabled:
+##   - Application data persists via MySQL
+##   - Pod logs/config lost on restart (acceptable)
+##   - Simple deployment without storage issues
+##
+## When enabled:
+##   - Preserves logs and pod-level config
+##   - Requires storage backend (Longhorn, EBS, etc.)
+##   - More complex, may have storage binding issues
+##
 persistence:
   type: pvc
-  enabled: true
-  storageClassName: default
+  enabled: false
+  storageClassName: "default"
   accessModes:
     - ReadWriteOnce
   size: 10Gi
